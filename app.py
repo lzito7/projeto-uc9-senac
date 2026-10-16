@@ -32,25 +32,45 @@ st.write("Digite uma avaliação de produto abaixo para que o modelo de **Regres
 texto_usuario = st.text_area("Escreva a avaliação do cliente:", placeholder="Ex: O produto chegou super rápido, excede todas as expectativas e a qualidade é excelente!")
 
 if st.button("Analisar Sentimento", type="primary"):
-    if text_input := texto_usuario.strip():
-        # 1. Vetorizar o texto usando o TfidfVectorizer treinado
-        texto_vetorizado = vetorizador.transform([text_input])
-        
-        # 2. Fazer a previsão com a Regressão Logística
-        predicao = modelo.predict(texto_vetorizado)[0]
-        
-        # 3. Obter probabilidades (confiança do modelo)
-        probabilidade = modelo.predict_proba(texto_vetorizado)[0]
-        confianca = max(probabilidade) * 100
-        
-        st.divider()
-        st.subheader("Resultado da Predição:")
-        
-        # Exibir o resultado visualmente com base na polaridade (0 = Negativo/Neutro, 1 = Positivo)
-        if predicao == 1:
-            st.success(f"🟢 **Sentimento Positivo** (Confiança: {confianca:.2f}%)")
-            st.balloons()
+    try:
+        if text_input := texto_usuario.strip():
+            texto_lower = text_input.lower()
+            
+            # Lista ampliada de termos e padrões de insatisfação no e-commerce
+            termos_negativos = [
+                "não veio", "nao veio", "não gostei", "nao gostei", 
+                "não funciona", "nao funciona", "não valeu", "nao valeu",
+                "demorou", "péssimo", "horrível", "ruim", "decepcionou", 
+                "estragado", "defeituoso", "fraude", "arrependi"
+            ]
+            
+            # Verifica se algum termo crítico está presente na avaliação
+            possui_insatisfacao = any(termo in texto_lower for termo in termos_negativos)
+
+            st.divider()
+            st.subheader("Resultado da Predição:")
+
+            # Se houver termos claros de insatisfação, forçamos a análise crítica com nota técnica
+            if possui_insatisfacao:
+                st.error("🔴 **Sentimento Negativo / Insatisfeito** (Classificação Crítica por Tratamento de Negação/Insatisfação)")
+                st.info("ℹ️ *Nota técnica:* Aplicada correção de rota heurística para mitigar falsos positivos do modelo linear TF-IDF em frases complexas.")
+            else:
+                # 1. Vetorizar o texto
+                texto_vetorizado = vetorizador.transform([text_input])
+                
+                # 2. Previsão e Probabilidades
+                predicao = modelo.predict(texto_vetorizado)[0]
+                probabilidade = modelo.predict_proba(texto_vetorizado)[0]
+                confianca = max(probabilidade) * 100
+                
+                # Exibir resultado padrão do modelo
+                if predicao == 1:
+                    st.success(f"🟢 **Sentimento Positivo** (Confiança: {confianca:.2f}%)")
+                    st.balloons()
+                else:
+                    st.error(f"🔴 **Sentimento Negativo / Insatisfeito** (Confiança: {confianca:.2f}%)")
         else:
-            st.error(f"🔴 **Sentimento Negativo / Insatisfeito** (Confiança: {confianca:.2f}%)")
-    else:
-        st.warning("Por favor, digite um texto válido para análise.")
+            st.warning("Por favor, digite um texto válido para análise.")
+            
+    except Exception as e:
+        st.error(f"Ocorreu um erro inesperado durante o processamento da predição: {e}")

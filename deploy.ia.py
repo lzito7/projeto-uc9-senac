@@ -28,7 +28,6 @@ except FileNotFoundError:
     print(f"ERRO: O arquivo '{nome_arquivo_csv}' não foi encontrado em '{arquivo_csv.parent}'.")
     raise SystemExit(1)
 
-# Substitui 'review_text_processed' e 'polarity' pelos nomes exatos que aparecerem no print acima se forem diferentes
 X_coluna = 'review_text_processed' 
 y_coluna = 'polarity'
 
@@ -38,13 +37,13 @@ df_clean[y_coluna] = df_clean[y_coluna].astype(int)
 X = df_clean[X_coluna]
 y = df_clean[y_coluna]
 
-# Divisão estratificada (etapa 10)
+# Divisão estratificada
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.20, random_state=42, stratify=y
 )
 
 print("="*70)
-print("--> [PASSO 2] VETORIZAÇÃO TF-IDF")
+print("--> [PASSO 2] VETORIZAÇÃO TF-IDF (Com Bigramas para capturar negações)")
 print("="*70)
 vectorizer = TfidfVectorizer(max_features=5000, ngram_range=(1, 2))
 X_train_tfidf = vectorizer.fit_transform(X_train)

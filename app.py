@@ -54,7 +54,6 @@ if st.button("Analisar Sentimento", type="primary"):
             # Se houver termos claros de insatisfação, forçamos a análise crítica com nota técnica
             if possui_insatisfacao:
                 st.error("🔴 **Sentimento Negativo / Insatisfeito** (Classificação Crítica por Tratamento de Negação/Insatisfação)")
-                st.info("ℹ️ *Nota técnica:* Aplicada correção de rota heurística para mitigar falsos positivos do modelo linear TF-IDF em frases complexas.")
             else:
                 # 1. Vetorizar o texto
                 texto_vetorizado = vetorizador.transform([text_input])

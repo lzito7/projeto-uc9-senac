@@ -36,12 +36,13 @@ if st.button("Analisar Sentimento", type="primary"):
         if text_input := texto_usuario.strip():
             texto_lower = text_input.lower()
             
-            # Lista ampliada de termos e padrões de insatisfação no e-commerce
+            # Lista ampliada e robusta de termos e padrões de insatisfação no e-commerce
             termos_negativos = [
                 "não veio", "nao veio", "não gostei", "nao gostei", 
-                "não funciona", "nao funciona", "não valeu", "nao valeu",
+                "não gostaram", "nao gostaram", "não funciona", "nao funciona", 
+                "não valeu", "nao valeu", "não estava", "nao estava",
                 "demorou", "péssimo", "horrível", "ruim", "decepcionou", 
-                "estragado", "defeituoso", "fraude", "arrependi"
+                "estragado", "defeituoso", "fraude", "arrependi", "ruim"
             ]
             
             # Verifica se algum termo crítico está presente na avaliação

@@ -6,7 +6,7 @@ from pathlib import Path
 import joblib
 import pandas as pd
 import streamlit as st
-
+from fpdf import FPDF
 # -----------------------------------------------------------------------------
 # Configuração da Página
 # -----------------------------------------------------------------------------
@@ -18,7 +18,39 @@ st.set_page_config(
 )
 
 BASE = Path(__file__).resolve().parent
-
+def gerar_pdf_relatorio(df_res, tot, pos, neu, neg):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Helvetica", "B", 16)
+    
+    # Título do Relatório
+    pdf.cell(0, 10, "Relatorio de Analise de Sentimentos - UC9 SENAC MT", new_x="LMARGIN", new_y="NEXT", align="C")
+    pdf.ln(5)
+    
+    # Resumo Executivo
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.cell(0, 10, "1. Resumo da Analise", new_x="LMARGIN", new_y="NEXT")
+    pdf.set_font("Helvetica", "", 10)
+    pdf.multi_cell(0, 6, f"Total de comentarios processados: {tot}\n"
+                        f"- Positivos: {pos} ({(pos/tot*100) if tot > 0 else 0:.1f}%)\n"
+                        f"- Neutros: {neu} ({(neu/tot*100) if tot > 0 else 0:.1f}%)\n"
+                        f"- Negativos: {neg} ({(neg/tot*100) if tot > 0 else 0:.1f}%)")
+    pdf.ln(5)
+    
+    # Amostra dos Resultados
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.cell(0, 10, "2. Amostra dos Resultados Classificados (Top 20)", new_x="LMARGIN", new_y="NEXT")
+    pdf.set_font("Helvetica", "", 9)
+    
+    for idx, row in df_res.head(20).iterrows():
+        texto = str(row.iloc[0])[:60] + "..." if len(str(row.iloc[0])) > 60 else str(row.iloc[0])
+        sentimento = str(row.get("sentimento_predito", "N/A"))
+        confianca = f"{float(row.get('confianca_modelo', 0))*100:.1f}%" if "confianca_modelo" in row else "N/A"
+        
+        pdf.multi_cell(0, 5, f"[{sentimento.upper()}] ({confianca}) - {texto}")
+        pdf.ln(1)
+        
+    return bytes(pdf.output())
 # -----------------------------------------------------------------------------
 # Carregamento de Artefatos
 # -----------------------------------------------------------------------------
@@ -592,13 +624,14 @@ with top_right:
         df_hist if not df_hist.empty 
         else pd.DataFrame(columns=["data", "texto", "sentimento", "confianca", "origem"])
     ).to_csv(index=False).encode("utf-8-sig")
-    
+    if 'df_res' in locals() or 'df_res' in globals():
+    pdf_bytes = gerar_pdf_relatorio(df_res, tot, pos, neu, neg)
     st.download_button(
-        "📄 Exportar Relatório",
-        data=dados_csv,
-        file_name="relatorio_sentimentos.csv",
-        mime="text/csv",
-        use_container_width=True,
+        label="📄 Exportar Relatório (PDF)",
+        data=pdf_bytes,
+        file_name="relatorio_analise_sentimentos.pdf",
+        mime="application/pdf",
+        use_container_width=True
     )
 
 # -----------------------------------------------------------------------------

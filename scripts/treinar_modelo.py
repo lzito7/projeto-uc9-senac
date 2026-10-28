@@ -10,15 +10,18 @@ from sklearn.dummy import DummyClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.svm import LinearSVC
-from sklearn.metrics import accuracy_score, f1_score
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 import joblib
+import json
+from datetime import datetime
 
 print("="*70)
 print("--> [PASSO 1] CARREGANDO OS DADOS LOCALMENTE NO VS CODE")
 print("="*70)
 
 nome_arquivo_csv = 'df_clean.csv'
-arquivo_csv = Path(__file__).resolve().parent / nome_arquivo_csv
+RAIZ = Path(__file__).resolve().parent.parent
+arquivo_csv = RAIZ / "data" / nome_arquivo_csv
 
 try:
     df_clean = pd.read_csv(arquivo_csv, on_bad_lines='skip')
@@ -91,7 +94,8 @@ print("="*70)
 
 modelo_campeao = modelos_treinados["1. Regressão Logística"]
 
-diretorio_script = Path(__file__).resolve().parent
+diretorio_script = RAIZ / "models"
+diretorio_script.mkdir(exist_ok=True)
 caminho_modelo = os.path.join(diretorio_script, 'modelo_regressao_logistica.pkl')
 caminho_vetor = os.path.join(diretorio_script, 'vetorizador_tfidf.pkl')
 
@@ -100,3 +104,22 @@ joblib.dump(vectorizer, caminho_vetor)
 
 print(f"Ficheiro do modelo salvo em: {caminho_modelo}")
 print(f"Ficheiro do vetorizador salvo em: {caminho_vetor}")
+
+print("=" * 70)
+print("--> [PASSO 5] SALVANDO METRICAS REAIS (models/metricas.json)")
+print("=" * 70)
+y_pred_campeao = modelo_campeao.predict(X_test_tfidf)
+y_pred_base = modelos_treinados["0. Baseline (Dummy)"].predict(X_test_tfidf)
+metricas = {
+    "acuracia": round(accuracy_score(y_test, y_pred_campeao) * 100, 2),
+    "precisao": round(precision_score(y_test, y_pred_campeao, average="macro") * 100, 2),
+    "recall": round(recall_score(y_test, y_pred_campeao, average="macro") * 100, 2),
+    "f1": round(f1_score(y_test, y_pred_campeao, average="macro") * 100, 2),
+    "baseline_acuracia": round(accuracy_score(y_test, y_pred_base) * 100, 2),
+    "proporcao_classes": {str(k): round(float(v), 4) for k, v in y.value_counts(normalize=True).items()},
+    "n_treino": int(len(y_train)),
+    "n_teste": int(len(y_test)),
+    "atualizado": datetime.now().strftime("%d/%m/%Y %H:%M"),
+}
+(diretorio_script / "metricas.json").write_text(json.dumps(metricas, ensure_ascii=False, indent=2), encoding="utf-8")
+print(json.dumps(metricas, ensure_ascii=False, indent=2))

@@ -1,0 +1,11 @@
+﻿.venv/
+venv/
+__pycache__/
+*.pyc
+*.bak
+.env
+.DS_Store
+
+# Dados locais grandes
+data/df_clean.csv
+df_clean.csv

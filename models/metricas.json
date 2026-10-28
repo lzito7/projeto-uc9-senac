@@ -1,0 +1,14 @@
+{
+  "acuracia": 94.57,
+  "precisao": 93.24,
+  "recall": 91.52,
+  "f1": 92.34,
+  "baseline_acuracia": 76.3,
+  "proporcao_classes": {
+    "1": 0.763,
+    "0": 0.237
+  },
+  "n_treino": 182209,
+  "n_teste": 45553,
+  "atualizado": "27/10/2026 (avaliação do modelo salvo)"
+}

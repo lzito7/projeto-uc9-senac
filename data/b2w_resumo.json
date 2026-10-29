@@ -1,0 +1,69 @@
+{
+  "origem": "B2W-Reviews01 (Americanas.com, jan-mai/2018)",
+  "repositorio_oficial": "https://github.com/americanas-tech/b2w-reviews01",
+  "repositorio_historico": "https://github.com/b2wdigital/b2w-reviews01",
+  "licenca": "CC BY-NC-SA 4.0",
+  "credito": "B2W Digital",
+  "arquivo_original": "data/B2W-Reviews01.csv",
+  "arquivo_preparado": "data/b2w_preparado.csv",
+  "n_original": 132373,
+  "n_preparado": 129098,
+  "n_removidos_sem_texto_ou_nota": 3275,
+  "campos_originais": [
+    "submission_date",
+    "reviewer_id",
+    "product_id",
+    "product_name",
+    "product_brand",
+    "site_category_lv1",
+    "site_category_lv2",
+    "review_title",
+    "overall_rating",
+    "recommend_to_a_friend",
+    "review_text",
+    "reviewer_birth_year",
+    "reviewer_gender",
+    "reviewer_state",
+    "sentimento_rotulo"
+  ],
+  "campos_usados": {
+    "texto_avaliacao": "review_text",
+    "titulo": "review_title",
+    "nome_produto": "product_name",
+    "marca": "product_brand",
+    "categoria": "site_category_lv1",
+    "subcategoria": "site_category_lv2",
+    "nota": "overall_rating",
+    "recomenda": "recommend_to_a_friend"
+  },
+  "regra_rotulagem": {
+    "Negativo": "overall_rating 1 ou 2",
+    "Neutro": "overall_rating 3",
+    "Positivo": "overall_rating 4 ou 5",
+    "observacao": "Rotulo derivado da nota, nao e previsao do modelo. O modelo treinado permanece binario (positivo/negativo)."
+  },
+  "distribuicao_preparado": {
+    "Positivo": 79316,
+    "Negativo": 33772,
+    "Neutro": 16010
+  },
+  "percentual_preparado": {
+    "Positivo": 61.44,
+    "Negativo": 26.16,
+    "Neutro": 12.4
+  },
+  "top_categorias": {
+    "Celulares e Smartphones": 20418,
+    "Eletroportáteis": 11522,
+    "Beleza e Perfumaria": 8788,
+    "Utilidades Domésticas": 8022,
+    "TV e Home Theater": 7414,
+    "Informática e Acessórios": 7269,
+    "Móveis": 6896,
+    "Brinquedos": 4597,
+    "Casa e Construção": 4315,
+    "Informática": 4134
+  },
+  "marca_preenchida": 40195,
+  "marca_vazia": 88903
+}

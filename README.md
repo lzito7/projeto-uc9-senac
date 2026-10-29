@@ -15,16 +15,22 @@ projeto-uc9-senac/
 ├── tema.py                 # estilo visual
 ├── requirements.txt
 ├── .streamlit/config.toml  # tema escuro
-├── models/                 # artefatos treinados
+├── models/                 # artefatos treinados (não substituídos)
 │   ├── modelo_regressao_logistica.pkl
 │   ├── vetorizador_tfidf.pkl
 │   └── metricas.json       # gerado pelo treino
 ├── data/
 │   ├── exemplo_avaliacoes.csv   # 20 avaliações para testar o modo lote
+│   ├── ORIGEM_B2W.md            # licença, colunas e regra de rotulagem
+│   ├── b2w_resumo.json          # totais verificados da B2W
+│   ├── b2w_amostra.csv          # 80 linhas (versionável)
+│   ├── B2W-Reviews01.csv        # original (~47 MB, NÃO versionada)
+│   ├── b2w_preparado.csv        # 3 classes pela nota (~37 MB, NÃO versionada)
 │   └── df_clean.csv             # base de treino (NÃO versionada)
 └── scripts/
     ├── treinar_modelo.py   # pipeline: treino, comparação de modelos, métricas
-    └── diagnostico.py      # inspeção do modelo e do vocabulário
+    ├── diagnostico.py      # inspeção do modelo e do vocabulário
+    └── preparar_b2w.py     # gera b2w_preparado.csv sem retreinar o modelo
 ```
 
 ## Como executar
@@ -38,7 +44,31 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-Para testar o modo lote, envie `data/exemplo_avaliacoes.csv` na aba "Análise em Lote".
+Para testar o modo lote, envie `data/exemplo_avaliacoes.csv` na página Relatórios.
+
+## Streamlit Community Cloud
+
+Arquivo principal: `app.py`. Os modelos devem permanecer em `models/` (caminhos relativos a `Path(__file__).parent`).
+
+1. Envie esta versão ao GitHub (`lzito7/projeto-uc9-senac`), na branch `main`.
+2. Em https://share.streamlit.io , conecte o repositório.
+3. Main file path: `app.py`.
+4. Python: 3.11 (`runtime.txt`).
+5. Redeploy após o push.
+
+Não envie `data/B2W-Reviews01.csv` nem `data/b2w_preparado.csv` (já estão no `.gitignore`).
+
+## Base B2W-Reviews01
+
+Origem oficial: https://github.com/americanas-tech/b2w-reviews01 (CC BY-NC-SA 4.0, crédito a B2W Digital). Detalhes em `data/ORIGEM_B2W.md`.
+
+O arquivo original e o preparado são grandes e estão no `.gitignore`. Com `data/B2W-Reviews01.csv` no projeto:
+
+```bash
+python scripts/preparar_b2w.py
+```
+
+Rotulagem de três classes (pela nota, não é a saída do modelo): 1-2 Negativo, 3 Neutro, 4-5 Positivo. O classificador salvo continua binário.
 
 ## Como retreinar
 

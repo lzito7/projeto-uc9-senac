@@ -1,11 +1,13 @@
-﻿.venv/
+.venv/
 venv/
 __pycache__/
 *.pyc
 *.bak
 .env
 .DS_Store
-
-# Dados locais grandes
+# base grande de treino (~715 mil linhas), não versionar
 data/df_clean.csv
-df_clean.csv
+# B2W-Reviews01 original (~47 MB) e arquivo preparado (~37 MB)
+data/B2W-Reviews01.csv
+data/b2w_preparado.csv
+*.zip
